@@ -1,4 +1,4 @@
-import { FormEventHandler, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 
 interface userProps {
@@ -7,7 +7,6 @@ interface userProps {
 }
 
 function Login() {
-  const [count, setCount] = useState(0);
   const [userCredentials, setUserCredentials] = useState({
     username: '',
     password: ''
@@ -20,46 +19,60 @@ function Login() {
     });
   };
 
-  const handlePasswordChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (updatePassword : React.ChangeEvent<HTMLInputElement>) => {
     setUserCredentials({
       ...userCredentials,
-      password: event.target.value
+      password: updatePassword.target.value
     });
   };
 
   const handleSubmit = async () => {
+    const loginData : userProps = {
+      username:userCredentials.username,
+      password:userCredentials.password
+    };
     try {
       console.log("Connecting to API...");
-      const response = await fetch(`https://http://127.0.0.1:8000/aileapp/api/login/username=${userCredentials.username}&password=${userCredentials.password}`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/login`, {
         method: 'GET',
+        headers: {
+          'login-data':JSON.stringify(loginData)
+        },
       });
       console.log("Got a response!");
-      const data = await response.json();
+      const data = response.json();
       console.log("API request received!", data);
     } catch (error) {
-      console.error("Cannot connect to API", error);
+      console.log(error);
+      //console.error("Cannot connect to API", error);
       alert("Cannot connect to API");
     }
   };
 
   return (
     <>
-      <div className="card">
+    <div className="login-container">
+      <img src="treeAIsle_logo.webp" alt="TreeAIsle" className="logo"></img>
+        <h2>Log into your treeAIsle account</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Enter your username or email..."
-            value={userCredentials.username}
-            onChange={handleUsernameChange}
-          />
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={userCredentials.password}
-            onChange={handlePasswordChange}
-          />
-          <button type="submit" onClick={() => setCount((count) => count + 1)}>
-            Count is {count}
+          <div className="input-box">
+            <input
+              type="text"
+              placeholder="Enter your username or email..."
+              value={userCredentials.username}
+              onChange={handleUsernameChange}
+            />
+          </div>
+          <div className="input-box">
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={userCredentials.password}
+              onChange={handlePasswordChange}
+            />
+          </div>
+          <button type="submit">
+            Log in
           </button>
         </form>
       </div>

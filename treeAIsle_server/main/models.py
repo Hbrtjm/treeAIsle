@@ -1,6 +1,10 @@
 from django.db import models
-import hashlib
 from datetime import datetime
+import hashlib
+
+'''
+class UserSerializer()
+'''
 
 class User(models.Model):
     username = models.CharField(max_length=100, unique=True)
