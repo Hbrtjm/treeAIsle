@@ -57,7 +57,7 @@ def login(request):
             return JsonResponse({'message': 'User does not exist'}, status=404)
     except Exception as e:
         # Later here should be a wrong password error
-        print(f"\n\n\n\n{e}\n\n\n\n")
+        print("nigger")
         return JsonResponse({'message': 'An error occurred'}, status=500)
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=405)

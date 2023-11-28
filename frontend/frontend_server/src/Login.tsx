@@ -1,11 +1,6 @@
 import { useState } from 'react'
 import './App.css'
 
-interface userProps {
-  username : string,
-  password : string
-}
-
 function Login() {
   const [userCredentials, setUserCredentials] = useState({
     username: '',
@@ -55,24 +50,20 @@ function Login() {
       <img src="treeAIsle_logo.webp" alt="TreeAIsle" className="logo"></img>
         <h2>Log into your treeAIsle account</h2>
         <form onSubmit={handleSubmit}>
-          <div className="input-box">
-            <input
-              type="text"
-              placeholder="Enter your username or email..."
-              value={userCredentials.username}
-              onChange={handleUsernameChange}
-            />
-          </div>
-          <div className="input-box">
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={userCredentials.password}
-              onChange={handlePasswordChange}
-            />
-          </div>
-          <button type="submit">
-            Log in
+          <input
+            type="text"
+            placeholder="Enter your username or email..."
+            value={userCredentials.username}
+            onChange={handleUsernameChange}
+          />
+          <input
+            type="password"
+            placeholder="Enter your password"
+            value={userCredentials.password}
+            onChange={handlePasswordChange}
+          />
+          <button type="submit" onClick={() => setCount((count) => count + 1)}>
+            Count is {count}
           </button>
         </form>
       </div>
