@@ -1,5 +1,12 @@
 import { useState } from 'react'
 import './App.css'
+import { FormEvent } from 'react';
+
+interface userProps
+{
+  username: string;
+  password: string;
+}
 
 function Login() {
   const [userCredentials, setUserCredentials] = useState({
@@ -21,22 +28,26 @@ function Login() {
     });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e : FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const loginData : userProps = {
       username:userCredentials.username,
       password:userCredentials.password
     };
     try {
       console.log("Connecting to API...");
-      const response = await fetch(`http://127.0.0.1:8000/api/login`, {
-        method: 'GET',
+      const response = await fetch(`/api/login`, {
+        method: 'POST',
         headers: {
-          'login-data':JSON.stringify(loginData)
+          'lgoin':'login',
+          'Access-Control-Allow-Origin': '*'
         },
+        body: JSON.stringify(loginData)
       });
       console.log("Got a response!");
-      const data = response.json();
-      console.log("API request received!", data);
+      const data = response;
+      // console.log("API request received!", data);
+      console.log(data)
     } catch (error) {
       console.log(error);
       //console.error("Cannot connect to API", error);
@@ -62,8 +73,8 @@ function Login() {
             value={userCredentials.password}
             onChange={handlePasswordChange}
           />
-          <button type="submit" onClick={() => setCount((count) => count + 1)}>
-            Count is {count}
+          <button type="submit">
+            Log in
           </button>
         </form>
       </div>
