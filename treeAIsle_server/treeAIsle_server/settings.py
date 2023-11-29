@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-$hqtx24mk79y-ti77fxva!clmx#=r&i*vb&*zr6qxi_g-hzyqu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'corsheaders',
     'main.apps.MainConfig',
     'rest_framework'
 ]
@@ -50,7 +51,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173'
+]
+ALLOWED_HOSTS = [
+    'localhost',
+]
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:5173',
+]
+
 
 ROOT_URLCONF = 'treeAIsle_server.urls'
 

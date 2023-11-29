@@ -16,7 +16,7 @@ class UserView(generics.ListAPIView):
 def api_index(request, *args, **kwargs):
     return render(request,'api_index.html')
 
-
+@csrf_exempt
 def login(request):
     print(f"{request}\n\n\n\n\n\n")
     #if request.method == 'GET':
@@ -57,7 +57,6 @@ def login(request):
             return JsonResponse({'message': 'User does not exist'}, status=404)
     except Exception as e:
         # Later here should be a wrong password error
-        print("nigger")
         return JsonResponse({'message': 'An error occurred'}, status=500)
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=405)
