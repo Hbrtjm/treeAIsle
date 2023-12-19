@@ -6,3 +6,11 @@ class UserSrializer(serializers.ModelSerializer):
         model = User
         fields = ('id','email','username','password',
                   'date_of_creation','is_contestant','tokens')
+class CreateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email','username','password')
+class VerifyUserSerialize(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email','username','password')

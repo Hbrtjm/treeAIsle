@@ -9,7 +9,7 @@ class Contestant:
         # There should be a definition of a model, performance should be calculated during the contest
     def __ge__(self,anotherContestant):
         return anotherContestant.performance < self.performance 
-    
+
 class Contest:
     def __init__(self):
         self.amountOfContestants = 0

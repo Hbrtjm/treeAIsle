@@ -1,11 +1,33 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
-from .serializers import UserSrializer
+from .serializers import UserSrializer, CreateUserSerializer
 from rest_framework import generics
 from django.shortcuts import HttpResponse, render
+from rest_framework.views import APIView
+from rest_framework.response import Response
 import hashlib
 import json
+
+class CreateUserSerializer(APIView):
+    serializer_class = CreateUserSerializer
+    def post(self,request,format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            email = serializer.data.email
+            username = serializer.data.username
+            password = serializer.data.password
+            queryset = User.objects.filter(host=host)
+            if queryset.exists():
+                user = queryset[0] 
+                user.username = username
+                user.email = user.email
+                user.password = user.password
+        else:
+            user = User()
+
 
 
 class UserView(generics.ListAPIView):
@@ -16,13 +38,21 @@ class UserView(generics.ListAPIView):
 def api_index(request, *args, **kwargs):
     return render(request,'api_index.html')
 
+def new_login():
+    pass
+
+def LoginView():
+    pass
+
 @csrf_exempt
-def login(request):
-    print(f"{request}\n\n\n\n\n\n")
+def login(request): # My boye doesn't want to rerurn a thing
+    print(f"{request.body}\n\n\n\n\n\n")
     #if request.method == 'GET':
     try:
-        data = json.loads(request.headers)
+        print("Getting data")
+        data = json.loads(request.body)
         email = data.get('username')
+        print(email)
         password = data.get('password')
         print(data)
         # Check if email exists in the database
@@ -41,12 +71,12 @@ def login(request):
             return JsonResponse({'message': 'Invalid credentials'}, status=401)
     except User.DoesNotExist:
         try:
-            data = json.loads(request.headers)
+            data = json.loads(request.body)
             email = data.get('username')
             password = data.get('password')
             
             # Check if email exists in the database
-            user = User.objects.get(username=username)            
+            user = User.objects.get(email=email)            
             # Verify the password
             # hashed_password = hashlib.sha256(password.encode()).hexdigest()
             if user.password == password:
