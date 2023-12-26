@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import '../CSS/App.css'
+import '../CSS/login.css'
 import { FormEvent } from 'react';
 
 interface userProps
@@ -39,7 +40,7 @@ function Login() {
       const response = await fetch(`/api/login`, {
         method: 'POST',
         headers: {
-          'lgoin':'login',
+          'login':'login',
           'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify(loginData)
@@ -60,15 +61,17 @@ function Login() {
     <div className="login-container">
       <img src="treeAIsle_logo.webp" alt="TreeAIsle" className="logo"></img>
         <h2>Log into your treeAIsle account</h2>
-        <form onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit}>
           <input
             type="text"
+            className="input-box"
             placeholder="Enter your username or email..."
             value={userCredentials.username}
             onChange={handleUsernameChange}
           />
           <input
             type="password"
+            className="input-box"
             placeholder="Enter your password"
             value={userCredentials.password}
             onChange={handlePasswordChange}

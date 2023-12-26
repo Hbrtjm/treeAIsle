@@ -5,7 +5,9 @@ from .serializers import UserSrializer, CreateUserSerializer
 from rest_framework import generics
 from django.shortcuts import HttpResponse, render
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 import hashlib
 import json
 
@@ -44,6 +46,42 @@ def new_login():
 def LoginView():
     pass
 
+@api_view(['POST'])
+def Login(request):
+    print(request)
+    try:
+        data = json.loads(request.body)
+        email = data.get('username')
+        password = data.get('password')
+        user = User.objects.get(email=email)
+        if user.password == password:
+            return Response(status=status.HTTP_202_ACCEPTED)
+    except User.DoesNotExist:
+        try:
+            username = data.get('username')
+            user = User.objects.get(username=username)
+            if user.password == password:
+                return Response(status=status.HTTP_202_ACCEPTED)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def Register(request):
+    print(request)
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        user = User.objects.get(username=username)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    except User.DoesNotExist:
+        password = data.get('password')
+        email = data.get('email')
+        user = User(username=username,password=password,email=email)
+        user.save()
+        return Response(status=status.HTTP_201_CREATED)
+    except:
+        print("An error occured")
+        return Response(status=status.HTTP_404_NOT_FOUND)
 @csrf_exempt
 def login(request): # My boye doesn't want to rerurn a thing
     print(f"{request.body}\n\n\n\n\n\n")
