@@ -1,13 +1,14 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
-from .serializers import UserSrializer, CreateUserSerializer
+from .serializers import UserSerializer, CreateUserSerializer
 from rest_framework import generics
 from django.shortcuts import HttpResponse, render
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from .validators import validate_email
 import hashlib
 import json
 
@@ -34,7 +35,7 @@ class CreateUserSerializer(APIView):
 
 class UserView(generics.ListAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSrializer
+    serializer_class = UserSerializer
 
 
 def api_index(request, *args, **kwargs):
@@ -61,7 +62,8 @@ def Login(request):
             username = data.get('username')
             user = User.objects.get(username=username)
             if user.password == password:
-                return Response(status=status.HTTP_202_ACCEPTED)
+                serializer = UserSerializer(user)
+                return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -69,19 +71,31 @@ def Login(request):
 def Register(request):
     print(request)
     try:
+    
         data = json.loads(request.body)
         username = data.get('username')
         user = User.objects.get(username=username)
+
+        # If user exists in the database, means we can't input a new one
+        
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
     except User.DoesNotExist:
         password = data.get('password')
         email = data.get('email')
+        if not validate_email(email):
+            
+            # Here it should be pointed out that email was wrong
+            
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         user = User(username=username,password=password,email=email)
         user.save()
         return Response(status=status.HTTP_201_CREATED)
     except:
         print("An error occured")
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 @csrf_exempt
 def login(request): # My boye doesn't want to rerurn a thing
     print(f"{request.body}\n\n\n\n\n\n")

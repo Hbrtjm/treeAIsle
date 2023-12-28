@@ -1,26 +1,23 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, ChangeEvent } from 'react'
 
 interface InputBoxProps {
+  type: string;
   name: string;
-  onChange: Function;
+  value: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-function InputBox(InputBoxProp: InputBoxProps) {
-  const [inputValue, setInputValue] = useState('');
-
-  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    InputBoxProp.onChange();
-  };
+const InputBox: React.FC<InputBoxProps> = ({ type, name, value, onChange }) => {
   return (
     <input
-      type="text"
-      placeholder={`Enter your ${InputBoxProp.name}...`}
-      value={inputValue}
-      onChange={handleValueChange}
+      type={type}
+      className="input-box"
+      placeholder="Enter your { name } ..."
+      value={value}
+      onChange={onChange}
     />
   );
-}
+};
 
 interface userProps
 {
@@ -37,6 +34,13 @@ function Register() {
     email: '',
     repeated_password:''
   });
+
+  const handleInputChange = (field: string) => (event: ChangeEvent<HTMLInputElement>) => {
+    setUserCredentials({
+      ...userCredentials,
+      [field]: event.target.value,
+    });
+  };
 
   const handleUsernameChange = (updateUsername : React.ChangeEvent<HTMLInputElement>) => {
     setUserCredentials({
@@ -94,7 +98,7 @@ function Register() {
       alert("Cannot connect to API");
     }
   };
-
+  const List = ['username','password','email','repeat_password'];
   return (
     <>
     <div className="login-container">

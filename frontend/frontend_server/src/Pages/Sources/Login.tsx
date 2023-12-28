@@ -10,6 +10,7 @@ interface userProps
 }
 
 function Login() {
+  let password_username_error = false;
   const [userCredentials, setUserCredentials] = useState({
     username: '',
     password: ''
@@ -49,6 +50,16 @@ function Login() {
       const data = response;
       // console.log("API request received!", data);
       console.log(data)
+      if(data.status==202)
+      {
+        password_username_error = false;
+        console.log("Redirecting...");
+      }
+      if(data.status==404)
+      {
+        console.log("Wrong password...");
+        password_username_error = true;
+      }
     } catch (error) {
       console.log(error);
       //console.error("Cannot connect to API", error);
@@ -61,6 +72,7 @@ function Login() {
     <div className="login-container">
       <img src="treeAIsle_logo.webp" alt="TreeAIsle" className="logo"></img>
         <h2>Log into your treeAIsle account</h2>
+        <p display={password_username_error == false ? "none" : "true"}>Wrong username or password</p>
         <form className="login-form" onSubmit={handleSubmit}>
           <input
             type="text"
