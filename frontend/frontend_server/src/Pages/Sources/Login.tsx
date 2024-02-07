@@ -2,6 +2,8 @@ import { useState } from 'react'
 import '../CSS/App.css'
 import '../CSS/login.css'
 import { FormEvent } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useLocation } from 'react-router'
 
 interface userProps
 {
@@ -10,7 +12,9 @@ interface userProps
 }
 
 function Login() {
-  let password_username_error = false;
+  let password_username_error:Boolean = false;
+  let notlogged = true;
+  const location = useLocation();
   const [userCredentials, setUserCredentials] = useState({
     username: '',
     password: ''
@@ -54,6 +58,10 @@ function Login() {
       {
         password_username_error = false;
         console.log("Redirecting...");
+        // Can't work like this - the function does not render again
+        notlogged = false;
+        window.location.reload();
+        console.log(notlogged);
       }
       if(data.status==404)
       {
@@ -66,13 +74,12 @@ function Login() {
       alert("Cannot connect to API");
     }
   };
-
-  return (
+  return notlogged ? (
     <>
     <div className="login-container">
       <img src="treeAIsle_logo.webp" alt="TreeAIsle" className="logo"></img>
         <h2>Log into your treeAIsle account</h2>
-        <p display={password_username_error == false ? "none" : "true"}>Wrong username or password</p>
+        <p>{ password_username_error && "Wrong username or password" }</p>
         <form className="login-form" onSubmit={handleSubmit}>
           <input
             type="text"
@@ -94,7 +101,7 @@ function Login() {
         </form>
       </div>
     </>
-  );
+  ) : (<Navigate to='/account' replace state={{from:location}} />);
 }
 
 export default Login;

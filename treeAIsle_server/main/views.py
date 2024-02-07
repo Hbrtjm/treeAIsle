@@ -75,7 +75,7 @@ def Register(request):
         data = json.loads(request.body)
         username = data.get('username')
         user = User.objects.get(username=username)
-
+        user = User.objects.get(email=email)
         # If user exists in the database, means we can't input a new one
         
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -86,6 +86,8 @@ def Register(request):
         if not validate_email(email):
             
             # Here it should be pointed out that email was wrong
+            
+            print("Wrong email")
             
             return Response(status=status.HTTP_400_BAD_REQUEST)
         user = User(username=username,password=password,email=email)
