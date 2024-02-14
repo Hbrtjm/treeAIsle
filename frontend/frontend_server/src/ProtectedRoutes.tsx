@@ -1,15 +1,10 @@
-import { useContext } from "react";
-import { useLocation } from "react-router"
 import { Navigate , Outlet } from "react-router-dom";
-import { UserContext } from "./App.tsx";
-
 const useAuth = () => {
-    const { user } = useContext(UserContext);
+    const user = { loggedIn: false };
     return user && user.loggedIn;
 }
 
 const ProtectedRoutes = () => {
-    const location = useLocation();
     const isAuth = useAuth();
     console.log(isAuth);
     return isAuth ? 
@@ -17,7 +12,7 @@ const ProtectedRoutes = () => {
         <Outlet />
     ) :
     (
-        <Navigate to='/login' replace state={{from:location}} />
+        <Navigate to='/login' />
     );
 }
 
