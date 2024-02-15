@@ -100,7 +100,7 @@ button:focus-visible {
 .input-box
 {
   cursor: text;
-  display: flex;
+  display: block;
   margin-bottom: 30px;
 }
 

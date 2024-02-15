@@ -24,3 +24,6 @@ def validate_phone_number(phone_number):
         return True
     else:
         return False
+    
+def is_valid_password(password):
+    return True

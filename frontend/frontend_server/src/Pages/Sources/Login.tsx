@@ -1,42 +1,38 @@
-import { useState } from 'react'
+import { useState, FormEvent, ChangeEvent } from 'react'
 import '../CSS/App.css'
-import '../CSS/login.css'
-import { FormEvent } from 'react';
+import '../CSS/Login.css'
 import { Navigate } from 'react-router-dom';
 import { useLocation } from 'react-router'
+import InputBox  from './InputBox';
 
-interface userProps
+interface UserProps
 {
   username: string;
   password: string;
 }
 
 function Login() {
-  let password_username_error:Boolean = false;
   let notlogged = true;
   const location = useLocation();
-  const [userCredentials, setUserCredentials] = useState({
+  const [wrongPassword,setWrongPassword] = useState(false);
+  const [userCredentials, setUserCredentials] = useState<UserProps>({
     username: '',
     password: ''
   });
-
-  const handleUsernameChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+  function handleWrongPassword()
+  {
+    setWrongPassword(true)
+  }
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUserCredentials({
       ...userCredentials,
-      username: event.target.value
-    });
-  };
-
-  const handlePasswordChange = (updatePassword : React.ChangeEvent<HTMLInputElement>) => {
-    setUserCredentials({
-      ...userCredentials,
-      password: updatePassword.target.value
+      [event.target.name]: event.target.value
     });
   };
 
   const handleSubmit = async (e : FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const loginData : userProps = {
+    const loginData : UserProps = {
       username:userCredentials.username,
       password:userCredentials.password
     };
@@ -56,17 +52,16 @@ function Login() {
       console.log(data)
       if(data.status==202)
       {
-        password_username_error = false;
         console.log("Redirecting...");
         // Can't work like this - the function does not render again
         notlogged = false;
         window.location.reload();
         console.log(notlogged);
       }
-      if(data.status==404)
+      if(data.status==404 || data.status==401)
       {
         console.log("Wrong password...");
-        password_username_error = true;
+        handleWrongPassword();
       }
     } catch (error) {
       console.log(error);
@@ -74,27 +69,31 @@ function Login() {
       alert("Cannot connect to API");
     }
   };
+
+  const inputFields = [
+    { placeholder:"Enter your username or email...", name:'username' as keyof UserProps },
+    { placeholder:"Enter your password...", name:'password' as keyof UserProps , type:'password'}
+  ];
+
   return notlogged ? (
     <>
     <div className="login-container">
       <img src="treeAIsle_logo.webp" alt="TreeAIsle" className="logo"></img>
         <h2>Log into your treeAIsle account</h2>
-        <p>{ password_username_error && "Wrong username or password" }</p>
+        <p>{ wrongPassword && "Wrong username or password" }</p>
         <form className="login-form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            className="input-box"
-            placeholder="Enter your username or email..."
-            value={userCredentials.username}
-            onChange={handleUsernameChange}
+          {inputFields.map((field,index) => (
+          <InputBox
+            key={index}
+            type={field.type}
+            name={field.name}
+            // A typescript problem, have to define a type of userCredentials, for now it's 'any', problem with 
+            // indexing by a string in
+            value={userCredentials[field.name]}
+            placeholder={field.placeholder}
+            onChange={handleInputChange}
           />
-          <input
-            type="password"
-            className="input-box"
-            placeholder="Enter your password"
-            value={userCredentials.password}
-            onChange={handlePasswordChange}
-          />
+          ))}
           <button type="submit">
             Log in
           </button>
