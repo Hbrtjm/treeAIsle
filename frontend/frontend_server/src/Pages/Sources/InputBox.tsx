@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react'
 
-interface InputBoxProps {
+interface InputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
     type?: string;
     name: string;
     value: string;

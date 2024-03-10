@@ -26,6 +26,10 @@ SECRET_KEY = 'django-insecure-$hqtx24mk79y-ti77fxva!clmx#=r&i*vb&*zr6qxi_g-hzyqu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Clears the server log displayed in terminal
+if DEBUG:
+    os.system("cls")
+
 # ALLOWED_HOSTS = ["*"]
 
 
@@ -40,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'corsheaders',
     'main.apps.MainConfig',
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -96,6 +101,8 @@ DATABASES = {
     }
 }
 
+# Email verification system
+# 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -139,7 +146,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }

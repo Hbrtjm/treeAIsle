@@ -1,10 +1,14 @@
 import re as regex
+from requests import get
 
 def validate_email(email):
     email_validator_expression = r'^[a-zA-Z0-9_.+-]{1,}@([a-zA-Z0-9-]{1,}\.){1,3}[a-zA-Z0-9-]{1,}$'
-    
     pattern = regex.compile(email_validator_expression)
     if regex.match(pattern,email):
+        domain = email.split('@')[1]
+        response = get(f"https://{domain}")
+        if response.status_code != 200:
+            return False
         return True
     else:
         return False
@@ -26,4 +30,5 @@ def validate_phone_number(phone_number):
         return False
     
 def is_valid_password(password):
+    # Have to check if the password has the fitting length, and contains suitable characters 
     return True

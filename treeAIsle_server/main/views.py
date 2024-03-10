@@ -2,12 +2,12 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
 from .serializers import UserSerializer, CreateUserSerializer
-from rest_framework import generics
+from rest_framework import generics, status
 from django.shortcuts import HttpResponse, render
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.authtoken.models import Token
 from .validators import is_valid_password, validate_email
 import hashlib
 import json
@@ -57,6 +57,9 @@ def Login(request):
         password = data.get('password')
         user = User.objects.get(email=email)
         if user.password == password:
+            serializer = UserSerializer(user)
+            # token, created = Token.objects.get_or_create(user=user)
+            print("a")
             return Response(status=status.HTTP_202_ACCEPTED)
     except User.DoesNotExist:
         try:
@@ -64,15 +67,19 @@ def Login(request):
             user = User.objects.get(username=username)
             if user.password == password:
                 serializer = UserSerializer(user)
-                return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+                token, created = Token.objects.get_or_create(user=user)
+                print("a")
+                print(token)
+                return Response({'token':token, 'data':serializer.data},status=status.HTTP_202_ACCEPTED)
         except User.DoesNotExist:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
     return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
 @api_view(['POST'])
 def Register(request):
-    print(request)
+    print(f"request={request}")
     try:
-        
         data = json.loads(request.body)
         username = data.get('username')
         user = User.objects.get(username=username)
@@ -87,17 +94,15 @@ def Register(request):
             password = data.get('password')
             email = data.get('email')
             if not validate_email(email):
-                
                 # Here it should be pointed out that email was wrong
                 error_flag = True
                 print("Wrong email")
                 
             elif len(username) < 4 or len(username) > 100 or username=='':
-                
                 # Here we put into JSON what's wrong with the username
                 error_flag = True
                 print("Wrong username")
-            elif len(password) < 8 or is_valid_password():
+            elif not is_valid_password(password):
                 error_flag = True
             
             if error_flag:

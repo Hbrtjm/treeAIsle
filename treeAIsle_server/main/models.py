@@ -1,9 +1,13 @@
 from django.db import models
 from datetime import datetime
 import hashlib
+from django.contrib.auth.models import AbstractBaseUser
 '''
 class UserSerializer()
 '''
+
+class TrainingModel(models.Model):
+    modelName = models.CharField(max_length=1000, unique=True)
 
 class User(models.Model):
     username = models.CharField(max_length=100, unique=True)

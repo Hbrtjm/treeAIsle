@@ -55,7 +55,7 @@ function Login() {
         console.log("Redirecting...");
         // Can't work like this - the function does not render again
         notlogged = false;
-        window.location.reload();
+        //window.location.reload();
         console.log(notlogged);
       }
       if(data.status==404 || data.status==401)
