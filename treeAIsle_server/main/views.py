@@ -1,17 +1,36 @@
+# Data transport/serialization imports
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
 from .serializers import UserSerializer, CreateUserSerializer
-from rest_framework import generics, status
-from django.shortcuts import HttpResponse, render
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+
+# Http response imports 
+from rest_framework import status, generics
+from django.shortcuts import render
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+# Authentication imports
 from rest_framework.authtoken.models import Token
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 from .validators import is_valid_password, validate_email
 import hashlib
 import json
 
+
+# Example view of authentication 
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def example_view(request, format=None):
+    content = {
+        'user': str(request.user),  # `django.contrib.auth.User` instance.
+        'auth': str(request.auth),  # None
+    }
+    return Response(content)
 class CreateUserSerializer(APIView):
     serializer_class = CreateUserSerializer
     def post(self,request,format=None):
