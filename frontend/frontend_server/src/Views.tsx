@@ -1,6 +1,5 @@
 import Login from './Pages/Sources/Login.tsx';
 import Homepage from './Pages/Sources/Homepage.tsx';
-import './Pages/CSS/login.css';
 import Register from './Pages/Sources/Register.tsx';
 import Account from './Pages/Sources/Account.tsx'
 import { Route, Routes } from 'react-router-dom';
