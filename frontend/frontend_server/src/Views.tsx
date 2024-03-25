@@ -6,7 +6,7 @@ import Account from './Pages/Sources/Account.tsx'
 import { Route, Routes } from 'react-router-dom';
 import ProtectedRoutes from './ProtectedRoutes.tsx'
 import React from 'react';
-
+import Provider from 'react-redux'
 interface UserProps{
     loggedIn:Boolean,
     username:string,
@@ -25,6 +25,7 @@ const Views = () => {
                 < Route path="/account" element={<Account />} />
             </Route>
         </Routes>
+
     )
 }
 
