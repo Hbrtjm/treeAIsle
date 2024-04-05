@@ -131,6 +131,6 @@ def Register(request):
             user.save()
             return Response(status=status.HTTP_201_CREATED)
         except:
-            print("An error occured")
+            print("An error occurred")
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

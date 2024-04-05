@@ -7,6 +7,7 @@ import { Route, Routes } from 'react-router-dom';
 import ProtectedRoutes from './ProtectedRoutes.tsx'
 import React from 'react';
 import Provider from 'react-redux'
+import store from './LocalStorage'
 interface UserProps{
     loggedIn:Boolean,
     username:string,
@@ -17,15 +18,16 @@ export const user = React.createContext<UserProps>({loggedIn:false,username:'',t
 
 const Views = () => {
     return (
-        <Routes>
-            <Route path="login" element = { <Login /> } />
-            <Route path="/" element={ <Homepage/> }/>
-            <Route path="register" element={ <Register/> }/>
-            <Route element={<ProtectedRoutes/>}>
-                < Route path="/account" element={<Account />} />
-            </Route>
-        </Routes>
-
+        <Provider store={store}>
+            <Routes>
+                <Route path="login" element = { <Login /> } />
+                <Route path="/" element={ <Homepage/> }/>
+                <Route path="register" element={ <Register/> }/>
+                <Route element={<ProtectedRoutes/>}>
+                    < Route path="/account" element={<Account />} />
+                </Route>
+            </Routes>
+        </Provider>
     )
 }
 
