@@ -13,7 +13,9 @@ interface UserProps {
 
 function Register() {
   const [showChecklist, setShowChecklist] = useState(true);
-  const [userCredentials , setUserCredentials] = useState<UserProps>({
+  const [showPassword, setShowPassword] = useState(true);
+
+  const [userCredentials, setUserCredentials] = useState<UserProps>({
     username: '',
     email: '',
     password: '',
@@ -27,11 +29,11 @@ function Register() {
   const passwordCorrect = isLongEnough && hasLowercase && hasUppercase && hasSpecialChar && noWhitespace;
   // Password checklist handler
   const handleFocus = () => {
-      setShowChecklist(true);
+    setShowChecklist(true);
   };
 
   const handleBlur = () => {
-      setShowChecklist(false);
+    setShowChecklist(false);
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -41,23 +43,26 @@ function Register() {
     });
   };
 
-  const handleSubmit = async (e : FormEvent<HTMLFormElement>) => {
+  const togglePasswordVisibility = (event: ChangeEvent<HTMLInputElement>) => {
+    setShowPassword(!showPassword);
+  }
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const loginData : UserProps = {
-      username:userCredentials.username,
-      email:userCredentials.email,
-      password:userCredentials.password,
-      repeated_password:userCredentials.repeated_password,
+    const loginData: UserProps = {
+      username: userCredentials.username,
+      email: userCredentials.email,
+      password: userCredentials.password,
+      repeated_password: userCredentials.repeated_password,
     };
-    if(passwordCorrect)
-    {
+    if (passwordCorrect) {
       try {
         console.log("Connecting to API...");
-        const response = await fetch(`/api/register`, {
+        const response = await fetch(`user_auth/register`, {
           method: 'POST',
           headers: {
-            'register':'register',
+            'register': 'register',
             'Access-Control-Allow-Origin': '*'
           },
           body: JSON.stringify(loginData)
@@ -72,17 +77,16 @@ function Register() {
         alert("Cannot connect to API");
       }
     }
-    else
-    {
-      
+    else {
+      alert("Your password doesn't match the security standards");
     }
   };
 
   const inputFields = [
-    { placeholder: 'Enter your username', name: 'username'  as keyof UserProps },
-    { placeholder: 'Enter your email', name: 'email'  as keyof UserProps },
-    { placeholder: 'Enter your password', name: 'password' as keyof UserProps , type: 'password' },
-    { placeholder: 'Repeat your password', name: 'repeated_password' as keyof UserProps , type: 'password' }
+    { placeholder: 'Enter your username', name: 'username' as keyof UserProps },
+    { placeholder: 'Enter your email', name: 'email' as keyof UserProps },
+    { placeholder: 'Enter your password', name: 'password' as keyof UserProps, type: 'password' },
+    { placeholder: 'Repeat your password', name: 'repeated_password' as keyof UserProps, type: 'password' }
   ];
   return (
     <>
@@ -92,38 +96,42 @@ function Register() {
         <form className="login-form" onSubmit={handleSubmit}>
           {inputFields.map((field, index) => (
             field.name != "password" ?
-            <InputBox
-              key={index}
-              type={field.type}
-              name={field.name}
-              // A typescript problem, have to define a type of userCredentials, for now it's 'any'
-              value={userCredentials[field.name]}
-              placeholder={field.placeholder}
-              onChange={handleInputChange}
-            />
-            :
-            <div>
-            <InputBox
-              key={index}
-              type={field.type}
-              name={field.name}
-              // A typescript problem, have to define a type of userCredentials, for now it's 'any'
-              value={userCredentials[field.name]}
-              placeholder={field.placeholder}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              onFocus={handleFocus}
-            />          
-            { showChecklist &&  (
-              <ul>
-                  <li style={{ color: isLongEnough ? 'green' : 'red' }}>At least 8 characters</li>
-                  <li style={{ color: hasLowercase ? 'green' : 'red' }}>Contains lowercase letter(s)</li>
-                  <li style={{ color: hasUppercase ? 'green' : 'red' }}>Contains uppercase letter(s)</li>
-                  <li style={{ color: hasSpecialChar ? 'green' : 'red' }}>Contains special character(s) (;:/?+\-_)</li>
-                  <li style={{ color: noWhitespace ? 'green' : 'red' }}>No whitespace</li>
-              </ul>
-          ) }
-            </div>
+              <InputBox
+                key={index}
+                type={field.type}
+                name={field.name}
+                // A typescript problem, have to define a type of userCredentials, for now it's 'any'
+                value={userCredentials[field.name]}
+                placeholder={field.placeholder}
+                onChange={handleInputChange}
+              />
+              :
+              <div>
+                <InputBox
+                  key={index}
+                  type={showPassword ? field.type : "text"}
+                  name={field.name}
+                  // A typescript problem, have to define a type of userCredentials, for now it's 'any'
+                  value={userCredentials[field.name]}
+                  placeholder={field.placeholder}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  onFocus={handleFocus}
+                >
+                  <button onClick={togglePasswordVisibility} style={{ padding: '10px' }}>
+                    {showPassword ? 'Hide' : 'Show'} Password
+                  </button>
+                </InputBox>
+                {showChecklist && (
+                  <ul>
+                    <li style={{ color: isLongEnough ? 'green' : 'red' }}>At least 8 characters</li>
+                    <li style={{ color: hasLowercase ? 'green' : 'red' }}>Contains lowercase letter(s)</li>
+                    <li style={{ color: hasUppercase ? 'green' : 'red' }}>Contains uppercase letter(s)</li>
+                    <li style={{ color: hasSpecialChar ? 'green' : 'red' }}>Contains special character(s) (;:/?+\-_)</li>
+                    <li style={{ color: noWhitespace ? 'green' : 'red' }}>No whitespace</li>
+                  </ul>
+                )}
+              </div>
           ))}
 
           <button type="submit">Register</button>

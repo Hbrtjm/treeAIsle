@@ -3,10 +3,10 @@ import '../CSS/App.css'
 import '../CSS/Login.css'
 import { Navigate } from 'react-router-dom';
 import { useLocation } from 'react-router'
-import InputBox  from './InputBox';
+import InputBox from './InputBox';
+import login from '../../Auth.tsx'
 
-interface UserProps
-{
+interface UserProps {
   username: string;
   password: string;
 }
@@ -14,13 +14,12 @@ interface UserProps
 function Login() {
   let notlogged = true;
   const location = useLocation();
-  const [wrongPassword,setWrongPassword] = useState(false);
+  const [wrongPassword, setWrongPassword] = useState(false);
   const [userCredentials, setUserCredentials] = useState<UserProps>({
     username: '',
     password: ''
   });
-  function handleWrongPassword()
-  {
+  function handleWrongPassword() {
     setWrongPassword(true)
   }
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -30,36 +29,33 @@ function Login() {
     });
   };
 
-  const handleSubmit = async (e : FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const loginData : UserProps = {
-      username:userCredentials.username,
-      password:userCredentials.password
+    const loginData: UserProps = {
+      username: userCredentials.username,
+      password: userCredentials.password
     };
+
     try {
       console.log("Connecting to API...");
-      const response = await fetch(`/api/login`, {
+      const response = await fetch(`user_auth/login`, {
         method: 'POST',
         headers: {
-          'login':'login',
+          'login': 'login',
           'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify(loginData)
       });
       console.log("Got a response!");
       const data = response;
-      // console.log("API request received!", data);
       console.log(data)
-      if(data.status==202)
-      {
+      if (data.status == 202) {
         console.log("Redirecting...");
-        // Can't work like this - the function does not render again
         notlogged = false;
         //window.location.reload();
         console.log(notlogged);
       }
-      if(data.status==404 || data.status==401)
-      {
+      if (data.status == 404 || data.status == 401) {
         console.log("Wrong password...");
         handleWrongPassword();
       }
@@ -71,28 +67,28 @@ function Login() {
   };
 
   const inputFields = [
-    { placeholder:"Enter your username or email...", name:'username' as keyof UserProps },
-    { placeholder:"Enter your password...", name:'password' as keyof UserProps , type:'password'}
+    { placeholder: "Enter your username or email...", name: 'username' as keyof UserProps },
+    { placeholder: "Enter your password...", name: 'password' as keyof UserProps, type: 'password' }
   ];
 
   return notlogged ? (
     <>
-    <div className="login-container">
-      <img src="treeAIsle_logo.webp" alt="TreeAIsle" className="logo"></img>
+      <div className="login-container">
+        <img src="treeAIsle_logo.webp" alt="TreeAIsle" className="logo"></img>
         <h2>Log into your treeAIsle account</h2>
-        <p>{ wrongPassword && "Wrong username or password" }</p>
+        <p>{wrongPassword && "Wrong username or password"}</p>
         <form className="login-form" onSubmit={handleSubmit}>
-          {inputFields.map((field,index) => (
-          <InputBox
-            key={index}
-            type={field.type}
-            name={field.name}
-            // A typescript problem, have to define a type of userCredentials, for now it's 'any', problem with 
-            // indexing by a string in
-            value={userCredentials[field.name]}
-            placeholder={field.placeholder}
-            onChange={handleInputChange}
-          />
+          {inputFields.map((field, index) => (
+            <InputBox
+              key={index}
+              type={field.type}
+              name={field.name}
+              // A typescript problem, have to define a type of userCredentials, for now it's 'any', problem with 
+              // indexing by a string in
+              value={userCredentials[field.name]}
+              placeholder={field.placeholder}
+              onChange={handleInputChange}
+            />
           ))}
           <button type="submit">
             Log in
@@ -100,7 +96,7 @@ function Login() {
         </form>
       </div>
     </>
-  ) : (<Navigate to='/account' replace state={{from:location}} />);
+  ) : (<Navigate to='/account' replace state={{ from: location }} />);
 }
 
 export default Login;
