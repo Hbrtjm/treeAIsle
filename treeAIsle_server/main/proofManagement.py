@@ -15,9 +15,10 @@ class Contestant:
     def get_performance(self,model,testDataset,resultDataset):
         self.performance = model.performance(testDataset,resultDataset)
 class Contest:
-    def __init__(self,result_data,training_data,model):
+    def __init__(self,result_data,training_data,model_type,model):
         # Every contest has its model class, the model class should be defined in training_models.py
         self.model = model
+        self.model_type = model_type
         self.result_data = result_data
         self.training_data = training_data
         self.amountOfContestants = 0
@@ -28,7 +29,7 @@ class Contest:
         chain.addBlock(block)
     def add_contestant(self,contestant):
         self.contestantPointers.append(contestant)
-    def contestant(self,iterations,test_amount):
+    def contest(self,iterations,test_amount):
         # Should be exchanged in the future for other dataset splitter
         from sklearn.model_selection import train_test_split
         from random import randint
