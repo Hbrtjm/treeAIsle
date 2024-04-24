@@ -11,11 +11,9 @@
   },
   "dependencies": {
     "@redux-devtools/extension": "^3.3.0",
-<<<<<<< HEAD
-=======
+    "@reduxjs/toolkit": "^2.2.3",
     "axios": "^1.6.8",
     "query-string": "^9.0.0",
->>>>>>> ee6a0ac6d49f65f4ebf969e7e10753ba34446084
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.1.0",
