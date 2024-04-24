@@ -36,7 +36,7 @@ def main():
             model_table.append(tf.keras.layers.Dense(layers_sizes[i]))
         else:
             model_table.append(tf.keras.layers.Dense(layers_sizes[i],activation=activation_functions[i]))
-    model = tf.keras.Sequential(model_table)
+    model = tf.keras.Sequential(model_table)    
 
     # Compile the model
     model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
@@ -83,6 +83,7 @@ if __name__ == "__main__":
 class Model():
     def __init__(self,model_type='adam',layers_sizes=[10,10,1],layers_functions=['relu','relu','output'],metrics=['mean_absolute_error'],loss_function = 'mean_squared_error',activation_functions = ['relu','relu','output'],library='tensorflow'):
         self.model_type = model_type
+        self.model = None
         self.library = library
         self.layers_sizes = layers_sizes
         self.layer_functions = layers_functions
@@ -123,11 +124,11 @@ class Model():
                         model_table.append(tf.keras.layers.Dense(layers_sizes[i]))
                     else:
                         model_table.append(tf.keras.layers.Dense(layers_sizes[i],activation=layer_functions[i]))
-                model = tf.keras.Sequential(model_table)
+                self.model = tf.keras.Sequential(model_table)
 
-                model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
-                model.summary()
-                history = model.fit(trainingDataset, resultDataset, epochs=10, validation_split=0.1)
+                self.model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
+                self.model.summary()
+                history = self.model.fit(trainingDataset, resultDataset, epochs=10, validation_split=0.1)
 
             except Exception as e:
                 print(f"An exception occurred during model training {e}")
