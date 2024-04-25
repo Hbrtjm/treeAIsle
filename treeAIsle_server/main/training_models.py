@@ -79,8 +79,7 @@ if __name__ == "__main__":
 #         x = self.dropout(x, training=training)
 #         return self.dense2(x)
 
-# model = MyModel()
-class Model():
+# model = MyModel()class Model():
     def __init__(self,model_type='adam',layers_sizes=[10,10,1],layers_functions=['relu','relu','output'],metrics=['mean_absolute_error'],loss_function = 'mean_squared_error',activation_functions = ['relu','relu','output'],library='tensorflow'):
         self.model_type = model_type
         self.library = library
@@ -89,24 +88,11 @@ class Model():
         self.loss_function = loss_function
         self.metrics = metrics
         self.activation_functions = activation_functions
+        self.model = None
     def train(self,trainingDataset, resultDataset, hypervaules):
-        if self.library == 'tensorflow':
+        if self.library == 'tensorflow': # Generally that's not the way, it's for demonstration purposes
             try:
-                import pandas as pd
-                import numpy as np
-                from sklearn.model_selection import train_test_split
-                from sklearn.preprocessing import StandardScaler
-                from sklearn.datasets import fetch_california_housing
-                import matplotlib.pyplot as plt
                 import tensorflow as tf
-                data = fetch_california_housing()
-                X = pd.DataFrame(data.data, columns=data.feature_names)
-                y = data.target
-                scaler = StandardScaler()
-                # X_scaled = scaler.fit_transform(X)
-                
-                # # This happens in the chain, as the chain saves the given dataset
-                # X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
                 layers_sizes = self.layers_sizes
                 optimizer = self.model_type
@@ -117,26 +103,26 @@ class Model():
                 
                 # Define a TensorFlow model
                 model_table = []
-                model_table.append(tf.keras.layers.Dense(layers_sizes[0],activation=activation_functions[0],input_shape=(X_train.shape[1],)))
+                model_table.append(tf.keras.layers.Dense(layers_sizes[0],activation=activation_functions[0],input_shape=(trainingDataset.shape[1],)))
                 for i in range(1,len(layers_sizes)):
                     if activation_functions[i] == 'output':
                         model_table.append(tf.keras.layers.Dense(layers_sizes[i]))
                     else:
                         model_table.append(tf.keras.layers.Dense(layers_sizes[i],activation=layer_functions[i]))
-                model = tf.keras.Sequential(model_table)
-
-                model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
-                model.summary()
-                history = model.fit(trainingDataset, resultDataset, epochs=10, validation_split=0.1)
+                self.model = tf.keras.Sequential(model_table)
+                self.model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
+                self.model.summary()
+                history = self.model.fit(trainingDataset, resultDataset, epochs=10, validation_split=0.1)
 
             except Exception as e:
                 print(f"An exception occurred during model training {e}")
-    def get_performace(self,model,testData,testResult):
+    def performance(self,testData,testResult):
         try:
             # Evaluate the model    
-            if self.model_type == 'tensorflow':
+            if self.library == 'tensorflow':
                 import tensorflow as tf
-                test_loss, test_mae = model.evaluate(testData, testResult)
+                test_loss, test_mae = self.model.evaluate(testData, testResult)
+                return (test_loss, test_mae)
             else: # As the project grows, we can add more models here, however the whole structure seems a bit inefficient
                 print("Unknown model")
                 raise ValueError("Unknown models")
