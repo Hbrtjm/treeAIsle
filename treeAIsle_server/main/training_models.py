@@ -79,7 +79,8 @@ if __name__ == "__main__":
 #         x = self.dropout(x, training=training)
 #         return self.dense2(x)
 
-# model = MyModel()class Model():
+# model = MyModel()
+class Model():
     def __init__(self,model_type='adam',layers_sizes=[10,10,1],layers_functions=['relu','relu','output'],metrics=['mean_absolute_error'],loss_function = 'mean_squared_error',activation_functions = ['relu','relu','output'],library='tensorflow'):
         self.model_type = model_type
         self.model = None
@@ -94,7 +95,6 @@ if __name__ == "__main__":
         if self.library == 'tensorflow': # Generally that's not the way, it's for demonstration purposes
             try:
                 import tensorflow as tf
-
                 layers_sizes = self.layers_sizes
                 optimizer = self.model_type
                 metrics = self.metrics
@@ -114,7 +114,7 @@ if __name__ == "__main__":
                 self.model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
                 self.model.summary()
                 history = self.model.fit(trainingDataset, resultDataset, epochs=10, validation_split=0.1)
-
+                return self.model
             except Exception as e:
                 print(f"An exception occurred during model training {e}")
     def performance(self,testData,testResult):

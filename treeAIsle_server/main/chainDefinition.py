@@ -35,6 +35,7 @@ class ModelBlock:
     def __init__(self,model_filename,maxPerformance):
         self.maxPerformance = maxPerformance
         self.model_filename = model_filename
+        self.model_values = None
         self.lastBlockHash = None
         self.lastBlock = None
         self.hash_ = None
