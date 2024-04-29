@@ -90,42 +90,43 @@ class Model():
         self.loss_function = loss_function
         self.metrics = metrics
         self.activation_functions = activation_functions
-        self.model = None
-    def train(self,trainingDataset, resultDataset, hypervaules):
+    def train(self,trainingDataset, resultDataset, epochs, hypervaules):
         if self.library == 'tensorflow': # Generally that's not the way, it's for demonstration purposes
-            try:
-                import tensorflow as tf
-                layers_sizes = self.layers_sizes
-                optimizer = self.model_type
-                metrics = self.metrics
-                layer_functions = self.layer_functions
-                activation_functions = self.activation_functions
-                loss_function = self.loss_function
-                
-                # Define a TensorFlow model
-                model_table = []
-                model_table.append(tf.keras.layers.Dense(layers_sizes[0],activation=activation_functions[0],input_shape=(trainingDataset.shape[1],)))
-                for i in range(1,len(layers_sizes)):
-                    if activation_functions[i] == 'output':
-                        model_table.append(tf.keras.layers.Dense(layers_sizes[i]))
-                    else:
-                        model_table.append(tf.keras.layers.Dense(layers_sizes[i],activation=layer_functions[i]))
-                self.model = tf.keras.Sequential(model_table)
-                self.model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
-                self.model.summary()
-                history = self.model.fit(trainingDataset, resultDataset, epochs=10, validation_split=0.1)
-                return self.model
-            except Exception as e:
-                print(f"An exception occurred during model training {e}")
+            # try:
+            import tensorflow as tf
+            layers_sizes = self.layers_sizes
+            optimizer = self.model_type
+            metrics = self.metrics
+            layer_functions = self.layer_functions
+            activation_functions = self.activation_functions
+            loss_function = self.loss_function
+            
+            # Define a TensorFlow model
+            model_table = []
+            print(trainingDataset.shape)
+            model_table.append(tf.keras.layers.Dense(layers_sizes[0],activation=activation_functions[0],input_shape=(trainingDataset.shape[1],)))
+            for i in range(1,len(layers_sizes)):
+                if activation_functions[i] == 'output':
+                    model_table.append(tf.keras.layers.Dense(layers_sizes[i]))
+                else:
+                    model_table.append(tf.keras.layers.Dense(layers_sizes[i],activation=layer_functions[i]))
+            self.model = tf.keras.Sequential(model_table)
+            self.model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
+            self.model.summary()
+            print(f"{trainingDataset.shape[0]} {resultDataset.shape[0]}")
+            history = self.model.fit(trainingDataset, resultDataset, epochs=epochs, validation_split=0.1)
+            return self.model
+            # except Exception as e:
+            #     print(f"An exception occurred during model training {e}")
     def performance(self,testData,testResult):
-        try:
-            # Evaluate the model    
-            if self.library == 'tensorflow':
-                import tensorflow as tf
-                test_loss, test_mae = self.model.evaluate(testData, testResult)
-                return (test_loss, test_mae)
-            else: # As the project grows, we can add more models here, however the whole structure seems a bit inefficient
-                print("Unknown model")
-                raise ValueError("Unknown models")
-        except Exception as e:
-            print(f"An exception occurred during model verification {e}")
+        # try:
+        #     # Evaluate the model    
+        if self.library == 'tensorflow':
+            import tensorflow as tf
+            test_loss, test_mae = self.model.evaluate(testData, testResult)
+            return (test_loss, test_mae)
+        else: # As the project grows, we can add more models here, however the whole structure seems a bit inefficient
+            print("Unknown model")
+            raise ValueError("Unknown models")
+        # except Exception as e:
+        #     print(f"An exception occurred during model verification {e}")

@@ -31,10 +31,10 @@ class Block:
 
 class ModelBlock:
     def __str__(self):
-        return f"Max performance = {self.maxPerformance}, Transaction Reciever = {self.reciever}, Transaction Sencer = {self.sender}, Transaction Verifier = {self.verifier}, Last Block Hash = {self.lastBlockHash}, Last Block Pointer = {self.lastBlock}, Hash = {self.hash_}\n"
-    def __init__(self,model_filename,maxPerformance):
+        return f"Name = {self.contestant_name}, \nMax performance = {self.maxPerformance}, \nLast Block Hash = {self.lastBlockHash}, \nHash = {self.hash_}\n\n"
+    def __init__(self,contestant_name,maxPerformance):
         self.maxPerformance = maxPerformance
-        self.model_filename = model_filename
+        self.contestant_name = contestant_name
         self.model_values = None
         self.lastBlockHash = None
         self.lastBlock = None
