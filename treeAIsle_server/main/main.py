@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 
 def main(*args,**kwargs):
     data = fetch_california_housing()
-    chain = cD.Chain(ModelBlock("empty.txt",0))
+    chain = cD.Chain(ModelBlock(None,0))
     X = pd.DataFrame(data.data, columns=data.feature_names)
     print(X.shape)
     y = data.target
@@ -19,7 +19,7 @@ def main(*args,**kwargs):
     testContest.add_contestant(contestant)
     contestant = cD.Contestant("Second_contestant")
     testContest.add_contestant(contestant)
-    testContest.contest(3,2)
+    testContest.contest(3,2,chain)
     testContest.compare(chain)
     print(chain.__str__())
     return 0

@@ -11,8 +11,8 @@ class Contestant:
         # There should be a definition of a model, performance should be calculated during the contest
     def __ge__(self,anotherContestant):
         return anotherContestant.performance < self.performance
-    def train_model(self,model,trainingDataset,resultDataset,epochs,hyperValues):
-        self.modelValues = model.train(trainingDataset,resultDataset,epochs,hyperValues)
+    def train_model(self,model,trainingDataset,resultDataset,epochs,current_name,hyperValues):
+        self.modelValues = model.train(trainingDataset,resultDataset,epochs,current_name,hyperValues)
     def get_performance(self,model,testDataset,resultDataset):
         self.performance = model.performance(testDataset,resultDataset)
         try:
@@ -34,7 +34,7 @@ class Contest:
         chain.addBlock(block)
     def add_contestant(self,contestant):
         self.contestantPointers.append(contestant)
-    def contest(self,epochs,test_amount):
+    def contest(self,epochs,test_amount,chain):
         # Should be exchanged in the future for other dataset splitter
         from sklearn.model_selection import train_test_split
         from random import randint
@@ -48,7 +48,7 @@ class Contest:
             tests.append((testData,testResult))
         for contestant in self.contestantPointers:
             # Should send the training data and signal to train
-            contestant.train_model(model,trainingData,trainingResult,epochs,randint(1,10000))
+            contestant.train_model(model,trainingData,trainingResult,epochs,f"{depth},{branch}",randint(1,10000))
         for contestant in self.contestantPointers:
             performance = 0
             for test_iteration in range(test_amount):

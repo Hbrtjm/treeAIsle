@@ -1,6 +1,8 @@
 import hashlib
 import numpy as np
 
+# Previous idea - to use ML as a proof of work instead of finding the best hash, but it's very limited when it reaches the local minimum,
+# So it's not viable for such job and no commercial PC would handle large models which require such long chains of optimization
 class Block:
     def __str__(self):
         return f"Max performance = {self.maxPerformance}, Transaction Reciever = {self.reciever}, Transaction Sencer = {self.sender}, Transaction Verifier = {self.verifier}, Last Block Hash = {self.lastBlockHash}, Last Block Pointer = {self.lastBlock}, Hash = {self.hash_}\n"
@@ -32,10 +34,14 @@ class Block:
 class ModelBlock:
     def __str__(self):
         return f"Name = {self.contestant_name}, \nMax performance = {self.maxPerformance}, \nLast Block Hash = {self.lastBlockHash}, \nHash = {self.hash_}\n\n"
-    def __init__(self,contestant_name,maxPerformance):
-        self.maxPerformance = maxPerformance
+    def __init__(self,contestant_name,maxPerformance,depth,,branch,model_vaules=None):
+        # For now the score, or rather the "maxPerformance", is just the lowest MSE of the model on random tests. This statistically should flatten out the overfitting,
+        # but is less deterministic, rather it favors the peudorandomly picked tests, further work should be done on the scoring 
         self.contestant_name = contestant_name
-        self.model_values = None
+        self.maxPerformance = maxPerformance
+        self.branch = branch
+        self.depth = depth
+        self.model_values = model_vaules
         self.lastBlockHash = None
         self.lastBlock = None
         self.hash_ = None
@@ -53,6 +59,9 @@ class ModelBlock:
         self.hash_ = hasher.hexdigest()
         return self
 
+
+# The target "audience" would be people aiming at effectively training medium sized models - 
+# such that a personal computer with a decent graphics card and a few gigs of memory could output reasonable results.
 class Chain:
     def __str__(self):
         main_string = ""
@@ -71,3 +80,8 @@ class Chain:
         self.chainSize += 0
         oldHeadBlock = self.headBlock
         self.headBlock = block.createBlock(oldHeadBlock)
+    def insertBlock(self,block):
+        # TODO:
+        # Tree-like structure feature, for now I'm using a simple hashed linked list for now. 
+        # This should backtrack into a desired node and create a new descendant with a better score.  
+        pass
