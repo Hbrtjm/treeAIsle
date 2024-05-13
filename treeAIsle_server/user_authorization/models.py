@@ -7,14 +7,6 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 
-"""
-class UserSerializer()
-"""
-
-
-# class TrainingModel(AbstractBaseUser, PermissionsMixin):
-#     modelName = models.CharField(max_length=1000, unique=True)
-
 
 class BaseUserManager(BaseUserManager):
 

@@ -36,12 +36,6 @@ def example_view(request, format=None):
     }
     return Response(content)
 
-
-class UserView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
 class CreateUserSerializer(APIView):
     serializer_class = CreateUserSerializer
 
