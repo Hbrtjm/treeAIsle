@@ -90,7 +90,7 @@ class Model():
         self.loss_function = loss_function
         self.metrics = metrics
         self.activation_functions = activation_functions
-    def train(self,trainingDataset, resultDataset, epochs, current_hash, hypervaules):
+    def train(self,trainingDataset, resultDataset, epochs, chain_id, current_hash, checkpoint_directory, hypervaules):
         if self.library == 'tensorflow': # Generally that's not the way, it's for demonstration purposes
             # try:
             import tensorflow as tf
@@ -113,10 +113,12 @@ class Model():
             self.model = tf.keras.Sequential(model_table)
             self.model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
             self.model.summary()
-            checkpoint_directory = "./saved_vaules/"
+            if current_hash == None:
+                current_hash = 0
+            callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=True, verbose=1)
+            checkpoint_path = f"{checkpoint_directory}{chain_id},{current_hash}" # {branch}"
             print(f"{trainingDataset.shape[0]} {resultDataset.shape[0]}")
             history = self.model.fit(trainingDataset, resultDataset, epochs=epochs, validation_split=0.1,callbacks=[callback])
-            
             return self.model
             # except Exception as e:
             #     print(f"An exception occurred during model training {e}")

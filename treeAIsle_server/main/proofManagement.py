@@ -41,14 +41,18 @@ class Contest:
         model = self.model
         training_data = self.training_data
         result_data = self.result_data
+        checkpoint_directory = "./saved_vaules/"
         # The split should be different
+        if chain.current_block.hash_ != None:
+            chekcpoint_path = f"{checkpoint_directory}{chain.id}{chain.current_block.lastBlock.hash_}"
+            model.load_weights(chekcpoint_path)
         tests = []
         for _ in range(test_amount):
             trainingData, testData, trainingResult, testResult = train_test_split(training_data, result_data, test_size=0.2,random_state=randint(1,1000))
             tests.append((testData,testResult))
         for contestant in self.contestantPointers:
             # Should send the training data and signal to train
-            contestant.train_model(model,trainingData,trainingResult,epochs,f"{depth},{branch}",randint(1,10000))
+            contestant.train_model(model,trainingData,trainingResult,epochs, chain.id, chain.current_block.hash_ ,randint(1,10000))
         for contestant in self.contestantPointers:
             performance = 0
             for test_iteration in range(test_amount):
