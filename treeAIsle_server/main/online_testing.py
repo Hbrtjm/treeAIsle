@@ -1,10 +1,9 @@
-
-import hashlib
+from hashlib import sha256
 import numpy as np
 
 # Previous idea - to use ML as a proof of work instead of finding the best hash, but it's very limited when it reaches the local minimum,
 # So it's not viable for such job and no commercial PC would handle large models which require such long chains of optimization
-class Block:
+class Block():
     def __str__(self):
         return f"Max performance = {self.maxPerformance}, Transaction Reciever = {self.reciever}, Transaction Sencer = {self.sender}, Transaction Verifier = {self.verifier}, Last Block Hash = {self.lastBlockHash}, Last Block Pointer = {self.lastBlock}, Hash = {self.hash_}\n"
     def __init__(self,reciever,sender,amount,verifier,maxPerformance):
@@ -20,7 +19,7 @@ class Block:
     def createBlock(self,lastBlock):
         self.lastBlockHash = lastBlock.getHash()
         self.lastBlock = lastBlock
-        hasher = hashlib.sha256()
+        hasher = sha256()
         hasher.update(np.random.bytes(10))
         hasher.update(self.reciever)
         hasher.update(self.sender)
@@ -32,30 +31,38 @@ class Block:
         self.hash_ = hasher.hexdigest()
         return self
 
-class ModelBlock:
+class ModelBlock():
     def __str__(self):
         return f"Name = {self.contestant_name}, \nMax performance = {self.maxPerformance}, \nLast Block Hash = {self.lastBlockHash}, \nHash = {self.hash_}\n\n"
-    def __init__(self,contestant_name,maxPerformance,depth,branch,model_vaules=None):
+    def __init__(self,contestant_name,maxPerformance,depth,branch,chain_id,model_values_filename=None):
         # For now the score, or rather the "maxPerformance", is just the lowest MSE of the model on random tests. This statistically should flatten out the overfitting,
         # but is less deterministic, rather it favors the peudorandomly picked tests, further work should be done on the scoring 
         self.contestant_name = contestant_name
         self.maxPerformance = maxPerformance
         self.branch = branch
         self.depth = depth
-        self.model_values = model_vaules
+        self.model_values_filename = model_values_filename
         self.lastBlockHash = None
         self.lastBlock = None
-        self.hash_ = None
+        self.chain_id = chain_id
+        if self.depth == 0:
+            hasher = sha256()
+            hasher.update(np.random.bytes(10))
+            # hasher.update(self.chain_id)
+            self.hash_ = hasher.hexdigest()
+        else:
+            self.hash_ = None # It will be determined by the contest in createBlock
     def getHash(self):
         return self.hash_
     def createBlock(self,lastBlock):
         self.lastBlockHash = lastBlock.getHash()
         self.lastBlock = lastBlock
-        hasher = hashlib.sha256()
+        hasher = sha256()
         hasher.update(np.random.bytes(10))
         # hasher.update(self.maxPerformance)
-        # hasher.update(self.model_filename)
+        # hasher.update(self.model_values_filename)
         # hasher.update(self.lastBlockHash)
+        # hasher.update(self.chain_id)
         # hasher.update(self.lastBlock)
         self.hash_ = hasher.hexdigest()
         return self
@@ -63,7 +70,7 @@ class ModelBlock:
 
 # The target "audience" would be people aiming at effectively training medium sized models - 
 # such that a personal computer with a decent graphics card and a few gigs of memory could output reasonable results.
-class Chain:
+class Chain():
     def __str__(self):
         main_string = ""
         main_string += f"Chain ID: 0\n"
@@ -72,10 +79,10 @@ class Chain:
             main_string += currentBlock.__str__()
             currentBlock = currentBlock.lastBlock
         return main_string
-    def __init__(self,startingBlock):
+    def __init__(self,startingBlock,chain_id):
         self.startingBlock = startingBlock
         self.chainSize = 0
-        self.id = 0 # Get from database and increment 
+        self.chain_id = chain_id
         self.headBlock = startingBlock
     def addBlock(self,block):
         self.chainSize += 0
@@ -87,6 +94,10 @@ class Chain:
         # This should backtrack into a desired node and create a new descendant with a better score.  
         pass
 
+
+def get_chain_id():
+    # Should give us a last pointer for chain ID from database
+    return randint(1,10000)
 
 # An alternative to consider
 # 
@@ -137,11 +148,10 @@ class Model():
             self.model = tf.keras.Sequential(model_table)
             self.model.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
             self.model.summary()
-            if chain.headBlock.hash_ != None:
-              chekcpoint_path = f"{checkpoint_directory}{chain.id}{chain.headBlock.lastBlock.hash_}"
+            if chain.headBlock.depth > 0:
+              chekcpoint_path = f"{checkpoint_directory}{chain.chain_id},{chain.headBlock.lastBlock.hash_}"
               self.model.load_weights(chekcpoint_path)
-            if current_hash == None:
-                current_hash = 0
+            current_hash = chain.headBlock.hash_
             checkpoint_path = f"{checkpoint_directory}{chain_id},{current_hash}" # {branch}"
             callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path, save_weights_only=True, verbose=1)
             print(f"{trainingDataset.shape[0]} {resultDataset.shape[0]}")
@@ -164,7 +174,7 @@ class Model():
 
 from random import randint
 
-class Contestant:
+class Contestant():
     def __init__(self,name,*args,**kwargs):
         self.name = name
         # Here performance would be calculated with a series of tests
@@ -182,7 +192,7 @@ class Contestant:
           return self.performance[0] # 0 - loss, 1 - default seating mae
         except Exception as e:
           print(e)
-class Contest:
+class Contest():
     def __init__(self,training_data,result_data,model,model_type='adam'):
         # Every contest has its model class, the model class should be defined in training_models.py
         self.model = model
@@ -193,7 +203,7 @@ class Contest:
         self.contestantPointers = []
     def compare(self,chain):
         self.contestantPointers.sort(key=lambda contestant: contestant.performance, reverse=True)
-        block = ModelBlock(self.contestantPointers[0].name,self.contestantPointers[0].performance,chain.headBlock.depth+1,0)
+        block = ModelBlock(self.contestantPointers[0].name,self.contestantPointers[0].performance,chain.headBlock.depth+1,0,chain.chain_id,f"{chain.chain_id},{chain.headBlock.hash_}")
         chain.addBlock(block)
     def add_contestant(self,contestant):
         self.contestantPointers.append(contestant)
@@ -212,7 +222,7 @@ class Contest:
             tests.append((testData,testResult))
         for contestant in self.contestantPointers:
             # Should send the training data and signal to train
-            contestant.train_model(model,trainingData,trainingResult,epochs, chain.id, chain.headBlock.hash_ , checkpoint_directory, chain ,randint(1,10000))
+            contestant.train_model(model,trainingData,trainingResult,epochs, chain.chain_id, chain.headBlock.hash_ , checkpoint_directory, chain ,randint(1,10000))
         for contestant in self.contestantPointers:
             performance = 0
             for test_iteration in range(test_amount):
@@ -221,12 +231,14 @@ class Contest:
         # End of the contest we can compare now
 
 import pandas as pd
-from sklearn.datasets import fetch_california_housing
+from sklearn.datasets import fetch_california_housing, load_iris
 from sklearn.preprocessing import StandardScaler
 
 def main(*args,**kwargs):
-    data = fetch_california_housing()
-    chain = Chain(ModelBlock(None,0,0,0))
+    # data = fetch_california_housing()
+    data = load_iris()
+    new_chain_id = get_chain_id()
+    chain = Chain(ModelBlock(None,0,0,0,new_chain_id),new_chain_id)
     X = pd.DataFrame(data.data, columns=data.feature_names)
     print(X.shape)
     y = data.target
@@ -240,6 +252,7 @@ def main(*args,**kwargs):
     testContest.add_contestant(contestant)
     testContest.contest(3,2,chain)
     testContest.compare(chain)    
+    print("Done first training")
     testContest.contest(3,2,chain)
     testContest.compare(chain)
     print(chain.__str__())
